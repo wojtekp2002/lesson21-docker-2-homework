@@ -24,10 +24,10 @@ report="docs/debug-report.md"
   docker inspect lesson21-nginx-debug --format 'Networks={{range $name, $conf := .NetworkSettings.Networks}}{{$name}} {{end}} Mounts={{range .Mounts}}{{.Type}}:{{.Name}}->{{.Destination}} {{end}}'
   echo
   echo "## Liczba odpowiedzi wedlug kodu HTTP"
-  docker exec lesson21-nginx-debug sh -c "awk '{print \\$9}' /var/log/nginx/access.log | sort | uniq -c"
+  docker exec lesson21-nginx-debug awk '{print $9}' /var/log/nginx/access.log | sort | uniq -c
   echo
   echo "## Ostatnie logi Nginx"
-  docker exec lesson21-nginx-debug sh -c "tail -n 20 /var/log/nginx/access.log"
+  docker exec lesson21-nginx-debug tail -n 20 /var/log/nginx/access.log
   echo
   echo "## Alert o bledach"
   ./zadanie2-nginx-debug/scripts/error-alert.sh || true
