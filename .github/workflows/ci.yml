@@ -1,0 +1,35 @@
+---
+name: Docker Lesson 21 CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run multicontainer task
+        run: |
+          ./zadanie1-multicontainer-volumes/scripts/run.sh
+          ./zadanie1-multicontainer-volumes/scripts/test.sh
+          ./zadanie1-multicontainer-volumes/scripts/cleanup.sh
+
+      - name: Run Nginx debug task
+        run: |
+          ./zadanie2-nginx-debug/scripts/run.sh
+          ./zadanie2-nginx-debug/scripts/generate-traffic.sh
+          ./zadanie2-nginx-debug/scripts/analyze.sh
+          ./zadanie2-nginx-debug/scripts/cleanup.sh
+
+      - name: Cleanup
+        if: always()
+        run: |
+          ./zadanie1-multicontainer-volumes/scripts/cleanup.sh || true
+          ./zadanie2-nginx-debug/scripts/cleanup.sh || true
+          docker volume rm lesson21_pgdata lesson21_static lesson21_nginx_logs || true
