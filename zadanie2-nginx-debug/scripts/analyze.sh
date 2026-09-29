@@ -6,7 +6,7 @@ report="docs/debug-report.md"
 tmp_access_log="$(mktemp)"
 trap 'rm -f "$tmp_access_log"' EXIT
 
-docker exec lesson21-nginx-debug cat /var/log/nginx/access.log > "$tmp_access_log"
+docker logs lesson21-nginx-debug > "$tmp_access_log" 2>&1
 
 {
   echo "# Raport analizy kontenera Nginx"
@@ -16,7 +16,6 @@ docker exec lesson21-nginx-debug cat /var/log/nginx/access.log > "$tmp_access_lo
   echo "- docker run z customowym plikiem konfiguracyjnym Nginx"
   echo "- docker logs lesson21-nginx-debug"
   echo "- docker inspect lesson21-nginx-debug"
-  echo "- docker exec lesson21-nginx-debug cat /var/log/nginx/access.log"
   echo
   echo "## Status kontenera"
   docker ps --filter name=lesson21-nginx-debug --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'
@@ -28,7 +27,7 @@ docker exec lesson21-nginx-debug cat /var/log/nginx/access.log > "$tmp_access_lo
   docker inspect lesson21-nginx-debug --format 'Networks={{range $name, $conf := .NetworkSettings.Networks}}{{$name}} {{end}} Mounts={{range .Mounts}}{{.Type}}:{{.Name}}->{{.Destination}} {{end}}'
   echo
   echo "## Liczba odpowiedzi wedlug kodu HTTP"
-  awk '{print $9}' "$tmp_access_log" | sort | uniq -c
+  awk '/"GET|POST|HEAD/ {print $9}' "$tmp_access_log" | sort | uniq -c
   echo
   echo "## Ostatnie logi Nginx"
   tail -n 20 "$tmp_access_log"
@@ -39,8 +38,8 @@ docker exec lesson21-nginx-debug cat /var/log/nginx/access.log > "$tmp_access_lo
   echo "## Wnioski"
   echo
   echo "- Kontener poprawnie serwuje strone glowna."
-  echo "- Odpowiedzi 404 i 500 sa widoczne w logach i mozna je policzyc automatycznie."
-  echo "- Logi aplikacji sa przechowywane w named volume, wiec mozna je analizowac niezaleznie od cyklu zycia kontenera."
+  echo "- Odpowiedzi 404 i 500 sa widoczne w docker logs i mozna je policzyc automatycznie."
+  echo "- Kontener ma named volume na logi/artefakty host-side oraz rotacje logow json-file."
   echo "- Rotacja logow json-file ogranicza ryzyko niekontrolowanego wzrostu plikow logow Dockera."
   echo
   echo "## Propozycje optymalizacji"

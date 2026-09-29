@@ -2,8 +2,8 @@
 set -euo pipefail
 
 errors=$(
-  docker exec lesson21-nginx-debug cat /var/log/nginx/access.log |
-    awk '{print $9}' |
+  docker logs lesson21-nginx-debug 2>&1 |
+    awk '/"GET|POST|HEAD/ {print $9}' |
     grep -E '^(4|5)' |
     wc -l
 )

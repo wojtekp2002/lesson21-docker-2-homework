@@ -15,7 +15,7 @@ docker run -d \
   -p 8082:80 \
   -v "$PWD/nginx/conf.d/default.conf:/etc/nginx/conf.d/default.conf:ro" \
   -v "$PWD/html:/usr/share/nginx/html:ro" \
-  -v lesson21_nginx_logs:/var/log/nginx \
+  -v lesson21_nginx_logs:/host-logs \
   nginx:alpine
 
 for attempt in $(seq 1 20); do
